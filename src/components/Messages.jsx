@@ -20,10 +20,10 @@ export default function Messages() {
   useEffect(() => {
     fetch("/api/ably/").then((response) => {
       response.json().then((accessToken) => {
-        setEventSourceUrl(`https://realtime.ably.io/event-stream?channels=chat-publish${lastEventParam}&v=1.2&accessToken=${accessToken.token}`);
+        setEventSourceUrl(`https://realtime.ably.io/event-stream?channels=chat-publish&v=1.2&accessToken=${accessToken.token}`);
       });
     });
-  }, [lastEventParam]);
+  }, []);
 
   useEffect(() => {
       let last = document.querySelector('#chatWindow > div:last-of-type')
