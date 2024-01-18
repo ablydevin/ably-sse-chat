@@ -10,7 +10,7 @@ export default function Messages() {
 
   const createEventSourceUrl = async () => {
     try {
-      const response = await fetch("/api/ably");
+      const response = await fetch("/api/ably", { cache: 'no-store' });
       const accessToken = await response.json();
       const lastEventParam = lastEvent ? `&lastEvent=${lastEvent.lastEventId}` : "";
       return `https://realtime.ably.io/event-stream?channels=chat-publish${lastEventParam}&v=1.2&accessToken=${accessToken.token}`;
