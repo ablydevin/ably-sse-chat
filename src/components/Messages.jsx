@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ReadyState, useEventSource } from "react-use-websocket";
 
 export default function Messages() {
@@ -17,13 +17,14 @@ export default function Messages() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   useEffect(() => {
     const fetchUrl = async () => {
       setEventSourceUrl(await createEventSourceUrl());
     };
     fetchUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function Messages() {
     if (lastEvent) {
       setMessages([...messages, JSON.parse(lastEvent.data)]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lastEvent]);
 
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function Messages() {
       }
     };
     fetchUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [readyState]);
 
   return (
