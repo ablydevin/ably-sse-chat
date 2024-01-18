@@ -1,5 +1,7 @@
 import Ably from "ably/promises";
 
+export const dynamic = "force-dynamic";
+
 export const GET = async (req, res) => {
 
  // Your application should perform some type of user 
