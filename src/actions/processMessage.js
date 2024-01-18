@@ -4,14 +4,11 @@ import Ably from 'ably'
 
 export async function processMessage(formData) {
 
-  //what data do we need to send a message?
-  // who sent the message?
-  // at what time did they send it?
-  // what is the message content?
-  // parent message id
+  // Typically you would not receive the clientID as a form value.  Instead,
+  // you would use an auth system to get the requesters user ID
+  const clientId = formData.get("clientId");
 
   const messageContent = formData.get("messageContent");
-  const clientId = formData.get("clientId");
   console.log(`Write ${messageContent} to Ably`);
   try {
     
@@ -21,11 +18,11 @@ export async function processMessage(formData) {
       messageContent === null ? null : { messageContent }
     );
 
+    // I'm basically using Ably as a data store - not much more
     const key = process.env.NEXT_ABLY_API_KEY;
-    console.log(key)
-    const client = new Ably.Rest.Promise(key);
+    const client = new Ably.Rest.Promise({ key: key, clientId: clientId });
     let channel = await client.channels.get('chat-publish');
-    var result = await channel.publish('asdasdasd',messagePayload);
+    var result = await channel.publish(messageContent,messagePayload);
     
     return { success : true }
   } catch (e) {

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { processMessage } from "@/actions/processMessage";
 
 export default function MessageBox() {
-  const [messageContent, setMessageContent] = useState('');
+  const [messageContent, setMessageContent] = useState("");
   const [processResponse, setProcessResponse] = useState(null);
 
   const sendMessageWithResponse = async (formData) => {
@@ -14,11 +14,25 @@ export default function MessageBox() {
   };
 
   return (
-    <div>
+    <div className="message-input">
       <form action={sendMessageWithResponse}>
-        <input type="hidden" id="clientId" value="devin" />
-        <textarea className="text-black" name="messageContent" placeholder="Send a message" value={messageContent} onChange={e => setMessageContent(e.target.value)}></textarea>
-        <button type="submit">Send</button>
+
+        <textarea
+          className="text-black"
+          name="messageContent"
+          placeholder="Send a message"
+          value={messageContent}
+          onChange={(e) => setMessageContent(e.target.value)}
+        ></textarea>
+        <button type="submit" className="button-blue">
+          Send
+        </button>
+
+        {/* typically you wouldn't keep the clientID in a hidden input because it could be manipulated by
+        a users.  Instead you'd use an auth system on the server to know who this is when they submit their message.  
+        But for simplicity of this demo this is what we'll do for now */}
+        <input type="hidden" id="clientId" name="clientId" value="devin" />
+
         {processResponse ? <p>{processResponse}</p> : null}
       </form>
     </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useEventSource } from "react-use-websocket";
-//import Message from "./Message";
 
 let lastEventId;
 
@@ -24,7 +23,17 @@ export default function Messages() {
         setEventSourceUrl(`https://realtime.ably.io/event-stream?channels=chat-publish${lastEventParam}&v=1.2&accessToken=${accessToken.token}`);
       });
     });
-  }, []);
+  }, [lastEventParam]);
+
+  useEffect(() => {
+      let last = document.querySelector('#chatWindow > div:last-of-type')
+      last.scrollIntoView({ behavior: 'auto' });
+  },[]);
+
+  useEffect(() => {
+      let last = document.querySelector('#chatWindow > div:last-of-type')
+      last.scrollIntoView({ behavior: 'auto' });
+  }, [messageEnvelopes]);
 
   const { lastEvent, getEventSource, readyState } = useEventSource(
     eventSourceUrl, 
@@ -69,13 +78,17 @@ export default function Messages() {
   // }, []);
 
   return (
-    <div>
-      <p>Messages</p>
-      <ul>
-        {messageEnvelopes.map((m) => (
-          <li key={m.id}>{JSON.parse(m.data).messageContent}</li>
+    <div className="message-display">          
+    <div id="chatWindow">
+      <div><p>msg</p></div>
+      <div><p>long message</p></div>
+      <div><p>ultra long message which can wrap at eighty percent</p></div>
+      <div><p>lorem ipsum</p></div>
+      <div><p>very long message</p></div>
+      {messageEnvelopes.map((m) => (
+          <div key={m.id}>{JSON.parse(m.data).clientId}: {JSON.parse(m.data).messageContent}</div>
         ))}
-      </ul>
     </div>
+  </div>
   );
 }

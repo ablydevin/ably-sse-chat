@@ -1,19 +1,17 @@
-
 import React, { Suspense } from "react";
-import Ably from 'ably'
-import { AblyProvider } from 'ably/react'
+import Ably from "ably";
+import { AblyProvider } from "ably/react";
 
 import Messages from "./Messages";
 import MessageBox from "./MessageBox";
 
 export default async function Chat() {
-
   return (
-    <div>
-        <p>Chat</p>
+    <div className="container">
+      <div className="content">
         <Messages />
-        {/* <TypingIndicator /> */}
         <MessageBox />
+      </div>
     </div>
   );
 }
