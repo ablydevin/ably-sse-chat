@@ -12,7 +12,6 @@ export const GET = async (req, res) => {
     const client = new Ably.Rest.Promise(process.env.NEXT_ABLY_API_KEY);
     const tokenRequestData = await client.auth.requestToken({
       clientId: clientId,
-      ttl: 120000
     });
     console.log(`Request: ${JSON.stringify(tokenRequestData)}`);
     return Response.json(tokenRequestData);
