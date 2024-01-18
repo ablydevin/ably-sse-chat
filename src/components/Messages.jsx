@@ -1,94 +1,127 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useEventSource } from "react-use-websocket";
-
-let lastEventId;
+import { ReadyState, useEventSource } from "react-use-websocket";
 
 export default function Messages() {
+
   const [eventSourceUrl, setEventSourceUrl] = useState(null);
-  const [messageEnvelopes, setMessageEnvelopes] = useState([]);
+  const [messages, setMessages] = useState([]);
 
-  const getRealtimeData = (messageEnvelope) => {
-    console.log(messageEnvelope);
-    lastEventId = messageEnvelope.id
-    setMessageEnvelopes([...messageEnvelopes, messageEnvelope]);
-  }
-
-  const lastEventParam = lastEventId ? (`&lastEvent=${lastEventId}`) : '';
+  const createEventSourceUrl = async () => {
+    try {
+      const response = await fetch("/api/ably/");
+      const accessToken = await response.json();
+      const lastEventParam = lastEvent ? `&lastEvent=${lastEvent.lastEventId}` : "";
+      return `https://realtime.ably.io/event-stream?channels=chat-publish${lastEventParam}&v=1.2&accessToken=${accessToken.token}`;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    fetch("/api/ably/").then((response) => {
-      response.json().then((accessToken) => {
-        setEventSourceUrl(`https://realtime.ably.io/event-stream?channels=chat-publish&v=1.2&accessToken=${accessToken.token}`);
-      });
-    });
+    const fetchUrl = async () => {
+      setEventSourceUrl(await createEventSourceUrl());
+    };
+    fetchUrl();
   }, []);
 
   useEffect(() => {
-      let last = document.querySelector('#chatWindow > div:last-of-type')
-      last.scrollIntoView({ behavior: 'auto' });
-  },[]);
-
-  useEffect(() => {
-      let last = document.querySelector('#chatWindow > div:last-of-type')
-      last.scrollIntoView({ behavior: 'auto' });
-  }, [messageEnvelopes]);
+    let last = document.querySelector("#chatWindow > div:last-of-type");
+    last.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
 
   const { lastEvent, getEventSource, readyState } = useEventSource(
-    eventSourceUrl, 
+    eventSourceUrl,
     {
       retryOnError: true,
-      events: {
-        message: (messageEvent) => {
-          console.log('This has type "message": ', messageEvent);      
-          getRealtimeData(JSON.parse(messageEvent.data));
-        },
-        update: (messageEvent) => {
-          console.log('This has type "update": ', messageEvent);
-        }
-      }
     }
   );
 
-  // const receiveMessages = () => {
-  //   fetch("/api/ably/").then((response) => {
-  //     response.json().then((accessToken) => {
+  useEffect(() => {
+    if (lastEvent) {
+      setMessages([...messages, JSON.parse(lastEvent.data)]);
+    }
+  }, [lastEvent]);
 
-  //       console.log(accessToken.token);
-  //       const url = `https://realtime.ably.io/event-stream?channels=chat-publish${lastEventParam}&v=1.2&accessToken=${accessToken.token}`;
-
-  //       const sse = new EventSource(url);
-  //       sse.onmessage = (e) => getRealtimeData(JSON.parse(e.data));
-  //       sse.onerror = (e) => {
-  //         // error log here
-  //         console.log(e);
-  //         sse.close();
-  //       };
-  //       return () => {
-  //         sse.close();
-  //       };
-
-  //     });
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   receiveMessages();
-  // }, []);
+  useEffect(() => {
+    const fetchUrl = async () => {
+      if (readyState === ReadyState.CLOSED) {
+        setEventSourceUrl(await createEventSourceUrl());
+      }
+    };
+    fetchUrl();
+  }, [readyState]);
 
   return (
-    <div className="message-display">          
-    <div id="chatWindow">
-      <div><p>msg</p></div>
-      <div><p>long message</p></div>
-      <div><p>ultra long message which can wrap at eighty percent</p></div>
-      <div><p>lorem ipsum</p></div>
-      <div><p>very long message</p></div>
-      {messageEnvelopes.map((m) => (
-          <div key={m.id}>{JSON.parse(m.data).clientId}: {JSON.parse(m.data).messageContent}</div>
+    <div className="message-display">
+      <div id="chatWindow">
+        <div>
+          <p>msg</p>
+        </div>
+        <div>
+          <p>long message</p>
+        </div>
+        <div>
+          <p>ultra long message which can wrap at eighty percent</p>
+        </div>
+        <div>
+          <p>lorem ipsum</p>
+        </div>
+        <div>
+          <p>very long message</p>
+        </div>
+        <div>
+          <p>msg</p>
+        </div>
+        <div>
+          <p>long message</p>
+        </div>
+        <div>
+          <p>ultra long message which can wrap at eighty percent</p>
+        </div>
+        <div>
+          <p>lorem ipsum</p>
+        </div>
+        <div>
+          <p>very long message</p>
+        </div>
+        <div>
+          <p>msg</p>
+        </div>
+        <div>
+          <p>long message</p>
+        </div>
+        <div>
+          <p>ultra long message which can wrap at eighty percent</p>
+        </div>
+        <div>
+          <p>lorem ipsum</p>
+        </div>
+        <div>
+          <p>very long message</p>
+        </div>
+        <div>
+          <p>msg</p>
+        </div>
+        <div>
+          <p>long message</p>
+        </div>
+        <div>
+          <p>ultra long message which can wrap at eighty percent</p>
+        </div>
+        <div>
+          <p>lorem ipsum</p>
+        </div>
+        <div>
+          <p>very long message</p>
+        </div>
+        {messages.map((m) => (
+          <div key={m.id}>
+            {JSON.parse(m.data).clientId}: {JSON.parse(m.data).messageContent}
+          </div>
         ))}
+      </div>
     </div>
-  </div>
   );
 }
