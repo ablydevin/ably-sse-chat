@@ -20,14 +20,6 @@ export default function Messages() {
   }
 
   useEffect(() => {
-    const fetchUrl = async () => {
-      setEventSourceUrl(await createEventSourceUrl());
-    };
-    fetchUrl();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
     let last = document.querySelector("#chatWindow > div:last-of-type");
     last.scrollIntoView({ behavior: "auto" });
   }, [messages]);
@@ -48,7 +40,7 @@ export default function Messages() {
 
   useEffect(() => {
     const fetchUrl = async () => {
-      if (readyState === ReadyState.CLOSED) {
+      if (readyState === ReadyState.UNINSTANTIATED || readyState === ReadyState.CLOSED) {
         setEventSourceUrl(await createEventSourceUrl());
       }
     };
